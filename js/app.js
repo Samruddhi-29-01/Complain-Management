@@ -19,8 +19,11 @@ function setupLoginPage() {
     try {
       const data = await api.login(email, password);
       setCurrentUser(data.user);
-      updateNavbar();
-      navigateTo('/dashboard');
+      
+      const role = data.user.role;
+      if (role === 'admin') window.location.href = '/admin.html';
+      else if (role === 'staff') window.location.href = '/staff.html';
+      else window.location.href = '/citizen.html';
     } catch (err) {
       errEl.textContent = err.message;
       errEl.classList.remove('hidden');
@@ -72,7 +75,7 @@ function setupRegisterPage() {
       setCurrentUser(data.user);
       updateNavbar();
       showToast(`Welcome to ResolveIt, ${data.user.name}! 🎉`, 'success');
-      navigateTo('/dashboard');
+      setTimeout(() => window.location.href = '/citizen.html', 1000);
     } catch (err) {
       errEl.textContent = err.message;
       errEl.classList.remove('hidden');

@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="ResolveIt – Modern complaint management for citizens and authorities.">
+  <title>ResolveIt – Complaint Management System</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body data-theme="admin">
+
+<!-- ═══════════════════════ NAVBAR ═══════════════════════ -->
+<nav id="navbar-app">
+  <div id="navbar-container">
+    <a href="#" id="navbar-logo-link">
+      <div id="navbar-logo-box">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      </div>
+      <span id="navbar-brand-text">ResolveIt</span>
+    </a>
+
+    <div id="navbar-user-section">
+      <div id="navbar-user-badge" class="hidden">
+        <div id="navbar-user-avatar"></div>
+        <span id="navbar-user-name"></span>
+        <span id="navbar-user-role"></span>
+      </div>
+
+      <!-- Notification Bell -->
+      <div id="navbar-notif-wrapper" class="hidden notif-wrapper">
+        <button id="navbar-notif-btn" class="icon-btn" title="Notifications">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+          <span id="notif-count" class="notif-count hidden">0</span>
+        </button>
+        <div id="notif-dropdown" class="notif-dropdown hidden">
+          <div class="notif-header">
+            <span>Notifications</span>
+            <button id="notif-mark-all" class="notif-mark-all">Mark all read</button>
+          </div>
+          <div id="notif-list" class="notif-list"></div>
+        </div>
+      </div>
+
+      <button id="navbar-logout-btn" class="hidden">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        Logout
+      </button>
+      <a href="#" id="navbar-signin-btn" class="hidden">Sign In</a>
+    </div>
+
+    <button id="navbar-mobile-toggle" aria-label="Toggle menu">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
+  </div>
+</nav>
+
+<!-- ═══════════════════════ LAYOUT ═══════════════════════ -->
+<div id="app-container">
+
+  <!-- SIDEBAR -->
+  <aside id="app-sidebar">
+    <div class="sidebar-links">
+      <a href="#" id="sidebar-dashboard" class="sidebar-link hidden">
+        <svg class="sidebar-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        Dashboard
+      </a>
+      <a href="#" id="sidebar-submit" class="sidebar-link hidden">
+        <svg class="sidebar-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+        Submit Complaint
+      </a>
+      <a href="#" id="sidebar-complaints" class="sidebar-link">
+        <svg class="sidebar-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+        Complaints
+      </a>
+      <a href="#" id="sidebar-staff" class="sidebar-link hidden">
+        <svg class="sidebar-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        Staff Management
+        <span id="sidebar-pending-badge" class="pending-badge hidden">!</span>
+      </a>
+    </div>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <main id="main-content">
+
+    <!-- ───────── LANDING PAGE ───────── -->
+    
+
+    <!-- ───────── LOGIN PAGE ───────── -->
+    <!-- ───────── DASHBOARD PAGE ───────── -->
+    <div id="page-dashboard">
+      <div class="page-header">
+        <div>
+          <h1 class="page-title">Dashboard</h1>
+          <p class="page-subtitle" id="dashboard-welcome">Welcome back</p>
+        </div>
+        <button id="dashboard-new-complaint" class="btn btn-primary hidden">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+          New Complaint
+        </button>
+      </div>
+
+      <div id="dashboard-stats" class="stats-grid hidden">
+        <div class="stat-card">
+          <div class="stat-content">
+            <div class="stat-label">Total</div>
+            <h3 id="stat-total" class="stat-value">0</h3>
+          </div>
+          <div class="stat-icon stat-icon-total">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-content">
+            <div class="stat-label">Pending</div>
+            <h3 id="stat-pending" class="stat-value">0</h3>
+          </div>
+          <div class="stat-icon stat-icon-pending">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-content">
+            <div class="stat-label">In Progress</div>
+            <h3 id="stat-progress" class="stat-value">0</h3>
+          </div>
+          <div class="stat-icon stat-icon-progress">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-content">
+            <div class="stat-label">Resolved</div>
+            <h3 id="stat-resolved" class="stat-value">0</h3>
+          </div>
+          <div class="stat-icon stat-icon-resolved">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+          </div>
+        </div>
+        <div class="stat-card stat-card-critical hidden" id="stat-card-critical">
+          <div class="stat-content">
+            <div class="stat-label">Critical</div>
+            <h3 id="stat-critical" class="stat-value">0</h3>
+          </div>
+          <div class="stat-icon stat-icon-critical">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          </div>
+        </div>
+      </div>
+
+      <!-- Category Chart -->
+      <div id="dashboard-charts" class="hidden">
+        <div class="card no-hover">
+          <h3 class="card-title">Complaints by Category</h3>
+          <div id="category-chart" class="bar-chart"></div>
+        </div>
+      </div>
+
+      <div class="card no-hover">
+        <div class="card-header">
+          <h3 class="card-title">Recent Complaints</h3>
+          <a href="#" id="dashboard-view-all" class="view-all-link">View All →</a>
+        </div>
+        <div class="table-container">
+          <table class="table" id="dashboard-complaints-table">
+            <thead>
+              <tr>
+                <th>Complaint</th>
+                <th>Priority</th>
+                <th>Status</th>
+                <th>Date</th>
+              </tr>
+            </thead>
+            <tbody id="dashboard-complaints-body"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ───────── COMPLAINTS LIST ───────── -->
+    <div id="page-complaints">
+      <div class="page-header">
+        <div>
+          <h1 class="page-title">Complaints</h1>
+          <p class="page-subtitle">Manage and track all service requests</p>
+        </div>
+      </div>
+
+      <div class="filter-bar">
+        <div class="search-wrapper">
+          <svg class="search-icon-el" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input type="text" id="complaint-search" class="search-input" placeholder="Search complaints...">
+        </div>
+        <div class="search-wrapper">
+          <svg class="search-icon-el" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input type="text" id="complaint-staff-search" class="search-input hidden" placeholder="Search staff name...">
+        </div>
+        <select id="complaint-status-filter" class="filter-select">
+          <option value="all">All Status</option>
+          <option value="pending">Pending</option>
+          <option value="in-progress">In Progress</option>
+          <option value="resolved">Resolved</option>
+          <option value="closed">Closed</option>
+        </select>
+        <select id="complaint-priority-filter" class="filter-select">
+          <option value="all">All Priority</option>
+          <option value="critical">🔴 Critical</option>
+          <option value="high">🟠 High</option>
+          <option value="medium">🔵 Medium</option>
+          <option value="low">🟢 Low</option>
+        </select>
+      </div>
+
+      <div class="card no-hover">
+        <div class="table-container">
+          <table class="table" id="complaints-table">
+            <thead>
+              <tr>
+                <th><a href="#" class="sort-link" data-sort="id">ID</a></th>
+                <th><a href="#" class="sort-link" data-sort="title">Complaint</a></th>
+                <th>Category</th>
+                <th>Priority</th>
+                <th><a href="#" class="sort-link" data-sort="status">Status</a></th>
+                <th>Assigned To</th>
+                <th><a href="#" class="sort-link" data-sort="created_at">Date</a></th>
+              </tr>
+            </thead>
+            <tbody id="complaints-body"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ───────── SUBMIT COMPLAINT ───────── -->
+    <div id="page-submit">
+      <div id="submit-container">
+        <div class="page-header">
+          <div>
+            <h1 id="submit-form-title" class="page-title">Submit New Complaint</h1>
+            <p id="submit-form-subtitle" class="page-subtitle">Provide details to help us resolve your issue quickly.</p>
+          </div>
+        </div>
+
+        <div class="form-card">
+          <form id="submit-form">
+            <div class="form-row">
+              <div class="form-group">
+                <label for="submit-category" class="form-label">Category</label>
+                <select id="submit-category" class="form-control" required>
+                  <option value="">Select a category</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="submit-priority" class="form-label">Priority Level</label>
+                <select id="submit-priority" class="form-control" required>
+                  <option value="low">🟢 Low – Minor inconvenience</option>
+                  <option value="medium" selected>🔵 Medium – Affects daily life</option>
+                  <option value="high">🟠 High – Urgent attention needed</option>
+                  <option value="critical">🔴 Critical – Immediate danger</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="submit-title" class="form-label">Complaint Title</label>
+              <input type="text" id="submit-title" class="form-control" placeholder="e.g., Street light not working on Main St" required>
+            </div>
+
+            <div class="form-group">
+              <label for="submit-location" class="form-label">Location / Address <span class="label-optional">(Optional)</span></label>
+              <input type="text" id="submit-location" class="form-control" placeholder="e.g., Near Park Gate, MG Road, Ward 5">
+            </div>
+
+            <div class="form-group">
+              <label for="submit-description" class="form-label">Detailed Description</label>
+              <textarea id="submit-description" class="form-control form-textarea" placeholder="Describe the issue in detail — when it started, how it affects you, etc." required></textarea>
+            </div>
+
+            <div class="form-group">
+              <label for="submit-image" class="form-label">Image URL <span class="label-optional">(Optional)</span></label>
+              <input type="url" id="submit-image" class="form-control" placeholder="https://example.com/photo.jpg">
+            </div>
+
+            <div class="form-buttons">
+              <button type="button" id="submit-cancel" class="btn btn-secondary">Cancel</button>
+              <button type="submit" id="submit-btn" class="btn btn-primary">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+                Submit Complaint
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- ───────── COMPLAINT DETAIL ───────── -->
+    <div id="page-detail">
+      <div id="detail-container">
+        <div id="detail-header">
+          <button id="detail-back-btn" class="back-btn">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+            Back to Complaints
+          </button>
+          <div class="detail-title-row">
+            <h1 id="detail-title" class="page-title"></h1>
+            <span id="detail-priority-badge" class="priority-badge"></span>
+            <span id="detail-status" class="status-badge"></span>
+          </div>
+          <p class="detail-meta" id="detail-meta"></p>
+          <p class="detail-location" id="detail-location-row" style="display:none;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            <span id="detail-location-text"></span>
+          </p>
+        </div>
+
+        <div class="detail-grid">
+          <!-- Left -->
+          <div class="detail-col-main">
+            <div class="detail-section">
+              <h3 class="section-label">Description</h3>
+              <p id="detail-description" class="detail-text"></p>
+              <img id="detail-image" class="detail-image hidden" alt="Complaint image">
+            </div>
+
+            <div id="detail-resolution-box" class="detail-section detail-section-success hidden">
+              <h3 class="section-label" style="color: var(--color-emerald-700);">✓ Resolution Notes</h3>
+              <p id="detail-resolution-text" class="detail-text"></p>
+            </div>
+
+            <!-- Activity Timeline -->
+            <div class="detail-section">
+              <h3 class="section-label">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+                Activity Timeline
+              </h3>
+              <div id="timeline-list" class="timeline-list"></div>
+            </div>
+
+            <!-- Comments -->
+            <div class="detail-section">
+              <h3 class="section-label">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                Comments <span id="comment-count" class="comment-count-badge">(0)</span>
+              </h3>
+              <div id="comments-list"></div>
+              <form id="comment-form" class="comment-form">
+                <textarea id="comment-input" class="comment-textarea" placeholder="Add a comment..."></textarea>
+                <button type="submit" id="comment-submit" class="comment-submit" title="Send comment">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+                  Send
+                </button>
+              </form>
+            </div>
+          </div>
+
+          <!-- Right -->
+          <div class="detail-col-side">
+            <div class="detail-section">
+              <h3 class="section-label">Complaint Info</h3>
+              <div class="detail-field">
+                <div class="detail-field-label">Category</div>
+                <div class="detail-field-value" id="detail-category"></div>
+              </div>
+              <div class="detail-field">
+                <div class="detail-field-label">Department</div>
+                <div class="detail-field-value" id="detail-department"></div>
+              </div>
+              <div class="detail-field">
+                <div class="detail-field-label">Submitted By</div>
+                <div class="detail-field-value" id="detail-user"></div>
+              </div>
+              <div class="detail-field">
+                <div class="detail-field-label">Assigned Staff</div>
+                <div class="detail-field-value" id="detail-staff"></div>
+              </div>
+            </div>
+
+            <div id="detail-manage" class="detail-section hidden">
+              <h3 class="section-label">⚙ Manage Complaint</h3>
+
+              <div class="form-group">
+                <label for="detail-priority-select" class="form-label">Priority</label>
+                <select id="detail-priority-select" class="form-control">
+                  <option value="low">🟢 Low</option>
+                  <option value="medium">🔵 Medium</option>
+                  <option value="high">🟠 High</option>
+                  <option value="critical">🔴 Critical</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="detail-status-select" class="form-label">Status</label>
+                <select id="detail-status-select" class="form-control">
+                  <option value="pending">Pending</option>
+                  <option value="in-progress">In Progress</option>
+                  <option value="resolved">Resolved</option>
+                  <option value="closed">Closed</option>
+                </select>
+              </div>
+
+              <div id="detail-staff-group" class="form-group hidden">
+                <label for="detail-staff-select" class="form-label">Assign Staff</label>
+                <select id="detail-staff-select" class="form-control">
+                  <option value="">Unassigned</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="detail-resolution" class="form-label">Resolution Notes</label>
+                <textarea id="detail-resolution" class="form-control form-textarea" placeholder="Describe resolution steps..."></textarea>
+              </div>
+
+              <button id="detail-save-btn" class="btn btn-primary btn-full">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+                Save Changes
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ───────── STAFF MANAGEMENT ───────── -->
+    <div id="page-staff">
+      <div class="page-header">
+        <div>
+          <h1 class="page-title">Staff Management</h1>
+          <p class="page-subtitle">Review registrations and manage authority accounts</p>
+        </div>
+      </div>
+
+      <!-- Pending Approvals -->
+      <div id="pending-approvals-section" class="hidden">
+        <div class="section-divider">
+          <span class="section-divider-label urgent-label">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            Pending Approvals
+          </span>
+        </div>
+        <div id="pending-list" class="staff-cards-grid"></div>
+      </div>
+
+      <!-- All Staff -->
+      <div class="section-divider">
+        <span class="section-divider-label">All Staff Members</span>
+      </div>
+      <div class="card no-hover">
+        <div class="table-container">
+          <table class="table" id="staff-table">
+            <thead>
+              <tr>
+                <th>Staff Member</th>
+                <th>Department</th>
+                <th>Employee ID</th>
+                <th>Status</th>
+                <th>Joined</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="staff-body"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- ═══ TOAST CONTAINER ═══ -->
+<div id="toast-container"></div>
+
+<!-- ═══ CONFIRM MODAL ═══ -->
+<div id="modal-overlay" class="modal-overlay">
+  <div class="modal-content">
+    <div class="modal-icon">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+    </div>
+    <h2 id="modal-title" class="modal-title"></h2>
+    <p id="modal-message" class="modal-message"></p>
+    <div class="modal-buttons">
+      <button id="modal-cancel" class="btn btn-secondary">Cancel</button>
+      <button id="modal-confirm" class="btn btn-primary">Confirm</button>
+    </div>
+  </div>
+</div>
+
+<script src="js/api.js"></script>
+<script src="js/utils.js"></script>
+<script src="js/router.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>

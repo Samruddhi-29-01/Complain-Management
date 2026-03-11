@@ -43,13 +43,20 @@ async function navigateTo(route) {
     loadStaffManagement();
     setActiveLink('sidebar-staff');
   } else if (route.startsWith('/complaints/')) {
-    if (!isAuthenticated()) return navigateTo('/login');
+    if (!isAuthenticated()) return window.location.href = '/';
     const id = parseInt(route.split('/')[2]);
     showPage('page-detail');
     loadComplaintDetail(id);
     setActiveLink('sidebar-complaints');
   } else {
-    navigateTo('/');
+    // Default module views
+    if (!isAuthenticated()) {
+      showPage('page-landing');
+    } else {
+      showPage('page-dashboard');
+      loadDashboard();
+      setActiveLink('sidebar-dashboard');
+    }
   }
 }
 
@@ -62,25 +69,30 @@ function navigateToDetail(id) { navigateTo(`/complaints/${id}`); }
 
 // ─── Setup Navigation Event Listeners ──────────────────────────────
 function setupNavigation() {
-  document.getElementById('navbar-logo-link').addEventListener('click', e => { e.preventDefault(); navigateTo('/'); });
-  document.getElementById('navbar-signin-btn').addEventListener('click', e => { e.preventDefault(); navigateTo('/login'); });
-  document.getElementById('navbar-logout-btn').addEventListener('click', e => { e.preventDefault(); logout(); navigateTo('/'); });
+  const addEvt = (id, fn) => {
+    const el = document.getElementById(id);
+    if (el) el.addEventListener('click', fn);
+  };
 
-  document.getElementById('landing-report-btn').addEventListener('click', e => { e.preventDefault(); navigateTo(isAuthenticated() ? '/submit' : '/login'); });
-  document.getElementById('landing-register-btn').addEventListener('click', e => { e.preventDefault(); navigateTo('/register'); });
-  document.getElementById('landing-cta-btn').addEventListener('click',  e => { e.preventDefault(); navigateTo('/register'); });
+  addEvt('navbar-logo-link', e => { e.preventDefault(); navigateTo('/'); });
+  addEvt('navbar-signin-btn', e => { e.preventDefault(); navigateTo('/login'); });
+  addEvt('navbar-logout-btn', e => { e.preventDefault(); logout(); window.location.href = '/'; });
 
-  document.getElementById('dashboard-new-complaint').addEventListener('click', e => { e.preventDefault(); navigateTo('/submit'); });
-  document.getElementById('dashboard-view-all').addEventListener('click', e => { e.preventDefault(); navigateTo('/complaints'); });
+  addEvt('landing-report-btn', e => { e.preventDefault(); navigateTo(isAuthenticated() ? '/submit' : '/login'); });
+  addEvt('landing-register-btn', e => { e.preventDefault(); navigateTo('/register'); });
+  addEvt('landing-cta-btn', e => { e.preventDefault(); navigateTo('/register'); });
 
-  document.getElementById('sidebar-dashboard').addEventListener('click',  e => { e.preventDefault(); navigateTo('/dashboard'); });
-  document.getElementById('sidebar-submit').addEventListener('click',     e => { e.preventDefault(); navigateTo('/submit'); });
-  document.getElementById('sidebar-complaints').addEventListener('click', e => { e.preventDefault(); navigateTo('/complaints'); });
-  document.getElementById('sidebar-staff').addEventListener('click',      e => { e.preventDefault(); navigateTo('/staff'); });
+  addEvt('dashboard-new-complaint', e => { e.preventDefault(); navigateTo('/submit'); });
+  addEvt('dashboard-view-all', e => { e.preventDefault(); navigateTo('/complaints'); });
 
-  document.getElementById('detail-back-btn').addEventListener('click',   e => { e.preventDefault(); navigateTo('/complaints'); });
-  document.getElementById('submit-cancel').addEventListener('click',     e => { e.preventDefault(); navigateTo('/complaints'); });
-  document.getElementById('register-back-btn').addEventListener('click', e => { e.preventDefault(); navigateTo('/login'); });
+  addEvt('sidebar-dashboard', e => { e.preventDefault(); navigateTo('/dashboard'); });
+  addEvt('sidebar-submit', e => { e.preventDefault(); navigateTo('/submit'); });
+  addEvt('sidebar-complaints', e => { e.preventDefault(); navigateTo('/complaints'); });
+  addEvt('sidebar-staff', e => { e.preventDefault(); navigateTo('/staff'); });
+
+  addEvt('detail-back-btn', e => { e.preventDefault(); navigateTo('/complaints'); });
+  addEvt('submit-cancel', e => { e.preventDefault(); navigateTo('/complaints'); });
+  addEvt('register-back-btn', e => { e.preventDefault(); navigateTo('/login'); });
 
   // Notification bell
   document.getElementById('navbar-notif-btn').addEventListener('click', toggleNotifDropdown);
@@ -99,30 +111,37 @@ function updateNavbar() {
   const signIn  = document.getElementById('navbar-signin-btn');
   const notifEl = document.getElementById('navbar-notif-wrapper');
 
-  if (user) {
-    badge.classList.remove('hidden');
-    document.getElementById('navbar-user-name').textContent = user.name;
-    document.getElementById('navbar-user-role').textContent = user.role;
-    document.getElementById('navbar-user-avatar').textContent = user.name.charAt(0).toUpperCase();
-    logout.classList.remove('hidden');
-    signIn.classList.add('hidden');
-    notifEl.classList.remove('hidden');
+  const toggleHidden = (id, hide) => {
+    const el = document.getElementById(id);
+    if (el) hide ? el.classList.add('hidden') : el.classList.remove('hidden');
+  };
 
-    document.getElementById('sidebar-dashboard').classList.remove('hidden');
-    document.getElementById('sidebar-submit').classList.toggle('hidden', user.role !== 'user');
-    document.getElementById('sidebar-staff').classList.toggle('hidden', user.role !== 'admin');
-    document.getElementById('dashboard-new-complaint').classList.toggle('hidden', user.role !== 'user');
-    document.getElementById('complaint-staff-search').classList.toggle('hidden', user.role !== 'admin');
+  if (user) {
+    if (badge) badge.classList.remove('hidden');
+    if (document.getElementById('navbar-user-name')) document.getElementById('navbar-user-name').textContent = user.name;
+    if (document.getElementById('navbar-user-role')) document.getElementById('navbar-user-role').textContent = user.role;
+    if (document.getElementById('navbar-user-avatar')) document.getElementById('navbar-user-avatar').textContent = user.name.charAt(0).toUpperCase();
+    
+    if (logout) logout.classList.remove('hidden');
+    if (signIn) signIn.classList.add('hidden');
+    if (notifEl) notifEl.classList.remove('hidden');
+
+    toggleHidden('sidebar-dashboard', false);
+    toggleHidden('sidebar-submit', user.role !== 'user');
+    toggleHidden('sidebar-staff', user.role !== 'admin');
+    toggleHidden('dashboard-new-complaint', user.role !== 'user');
+    toggleHidden('complaint-staff-search', user.role !== 'admin');
 
     loadNotifications();
   } else {
-    badge.classList.add('hidden');
-    logout.classList.add('hidden');
-    notifEl.classList.add('hidden');
-    signIn.classList.remove('hidden');
-    document.getElementById('sidebar-dashboard').classList.add('hidden');
-    document.getElementById('sidebar-submit').classList.add('hidden');
-    document.getElementById('sidebar-staff').classList.add('hidden');
+    if (badge) badge.classList.add('hidden');
+    if (logout) logout.classList.add('hidden');
+    if (notifEl) notifEl.classList.add('hidden');
+    if (signIn) signIn.classList.remove('hidden');
+    
+    toggleHidden('sidebar-dashboard', true);
+    toggleHidden('sidebar-submit', true);
+    toggleHidden('sidebar-staff', true);
   }
 }
 
@@ -175,5 +194,36 @@ async function markAllNotificationsRead() {
 window.addEventListener('DOMContentLoaded', () => {
   setupNavigation();
   updateNavbar();
-  navigateTo('/');
+
+  const user = getCurrentUser();
+  const path = window.location.pathname.toLowerCase();
+  
+  // Protect routes and enforce physical HTML file separation
+  if (!user) {
+    if (!path.endsWith('/') && !path.endsWith('index.html') && !path.endsWith('/login') && !path.endsWith('/register')) {
+      window.location.href = '/';
+      return;
+    }
+  } else {
+    const roleFile = `/${user.role === 'user' ? 'citizen' : user.role}.html`;
+    
+    // Redirect if they log in and are stuck on index.html
+    if (path.endsWith('/') || path.endsWith('index.html')) {
+      window.location.href = roleFile;
+      return;
+    }
+
+    // Guard against navigating to the wrong module HTML file
+    if (!path.endsWith(roleFile)) {
+      window.location.href = roleFile;
+      return;
+    }
+  }
+
+  // Load appropriate default view inside the module
+  if (!user) {
+    navigateTo((path === '/' || path === '/index.html') ? '/' : path);
+  } else {
+    navigateTo('/dashboard');
+  }
 });

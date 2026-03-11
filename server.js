@@ -1,13 +1,16 @@
+require("dotenv").config();
 const express = require("express");
+const cors    = require("cors");
+const helmet  = require("helmet");
 const path    = require("path");
 const bcrypt  = require("bcryptjs");
 const jwt     = require("jsonwebtoken");
 const { DatabaseSync } = require("node:sqlite");
 
-const PORT       = 3000;
-const JWT_SECRET = "resolveit-secret-key-2024";
-const db         = new DatabaseSync(path.join(__dirname, "resolveit.db"));
-
+const PORT       = process.env.PORT || 3000;
+const JWT_SECRET = process.env.JWT_SECRET || "resolveit-secret-key-2024";
+const DB_PATH    = process.env.DB_PATH || path.join(__dirname, "resolveit.db");
+const db         = new DatabaseSync(DB_PATH);
 // ─────────────────────────────────────────────
 //  DATABASE SETUP
 // ─────────────────────────────────────────────
@@ -137,7 +140,13 @@ function addNotification(user_id, complaint_id, message) {
 //  EXPRESS APP
 // ─────────────────────────────────────────────
 const app = express();
+app.use(helmet({
+  contentSecurityPolicy: false, // Disabling CSP so we don't block our own inline scripts/styles unless configured properly
+  crossOriginEmbedderPolicy: false
+}));
+app.use(cors());
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 app.use(express.static(__dirname));
 
 // ─────────────────────────────────────────────
@@ -469,9 +478,17 @@ app.get("*", (_req, res) => {
 });
 
 // ─────────────────────────────────────────────
+//  GLOBAL ERROR HANDLER
+// ─────────────────────────────────────────────
+app.use((err, req, res, next) => {
+  console.error("[Error]", err);
+  res.status(500).json({ error: "Internal Server Error" });
+});
+
+// ─────────────────────────────────────────────
 //  START SERVER
 // ─────────────────────────────────────────────
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
   console.log(`
 ╔══════════════════════════════════════════════════════╗
 ║        ResolveIt — Complaint Management App          ║
@@ -484,3 +501,28 @@ app.listen(PORT, () => {
 ╚══════════════════════════════════════════════════════╝
   `);
 });
+
+// ─────────────────────────────────────────────
+//  GRACEFUL SHUTDOWN
+// ─────────────────────────────────────────────
+function gracefulShutdown() {
+  console.log("\\n[Server] Shutting down gracefully...");
+  server.close(() => {
+    console.log("[Server] Closed out remaining connections.");
+    try {
+      db.close();
+      console.log("[Server] Database connection closed.");
+    } catch (err) {
+      console.error("[Server] Error closing database:", err);
+    }
+    process.exit(0);
+  });
+  
+  setTimeout(() => {
+    console.error("[Server] Forced shutdown after timeout.");
+    process.exit(1);
+  }, 10000);
+}
+
+process.on("SIGINT", gracefulShutdown);
+process.on("SIGTERM", gracefulShutdown);
