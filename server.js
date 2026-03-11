@@ -9,7 +9,7 @@ const { DatabaseSync } = require("node:sqlite");
 
 const PORT       = process.env.PORT || 3000;
 const JWT_SECRET = process.env.JWT_SECRET || "resolveit-secret-key-2024";
-const DB_PATH    = process.env.DB_PATH || path.join(__dirname, "resolveit.db");
+const DB_PATH    = process.env.DB_PATH || (process.env.VERCEL ? "/tmp/resolveit.db" : path.join(__dirname, "resolveit.db"));
 const db         = new DatabaseSync(DB_PATH);
 // ─────────────────────────────────────────────
 //  DATABASE SETUP
@@ -486,10 +486,11 @@ app.use((err, req, res, next) => {
 });
 
 // ─────────────────────────────────────────────
-//  START SERVER
+//  START SERVER OR EXPORT FOR VERCEL
 // ─────────────────────────────────────────────
-const server = app.listen(PORT, () => {
-  console.log(`
+if (!process.env.VERCEL) {
+  const server = app.listen(PORT, () => {
+    console.log(`
 ╔══════════════════════════════════════════════════════╗
 ║        ResolveIt — Complaint Management App          ║
 ╠══════════════════════════════════════════════════════╣
@@ -499,30 +500,33 @@ const server = app.listen(PORT, () => {
 ║  👤  Admin : admin@resolveit.com  /  admin123        ║
 ║                                                      ║
 ╚══════════════════════════════════════════════════════╝
-  `);
-});
-
-// ─────────────────────────────────────────────
-//  GRACEFUL SHUTDOWN
-// ─────────────────────────────────────────────
-function gracefulShutdown() {
-  console.log("\\n[Server] Shutting down gracefully...");
-  server.close(() => {
-    console.log("[Server] Closed out remaining connections.");
-    try {
-      db.close();
-      console.log("[Server] Database connection closed.");
-    } catch (err) {
-      console.error("[Server] Error closing database:", err);
-    }
-    process.exit(0);
+    `);
   });
-  
-  setTimeout(() => {
-    console.error("[Server] Forced shutdown after timeout.");
-    process.exit(1);
-  }, 10000);
+
+  // ─────────────────────────────────────────────
+  //  GRACEFUL SHUTDOWN
+  // ─────────────────────────────────────────────
+  function gracefulShutdown() {
+    console.log("\\n[Server] Shutting down gracefully...");
+    server.close(() => {
+      console.log("[Server] Closed out remaining connections.");
+      try {
+        db.close();
+        console.log("[Server] Database connection closed.");
+      } catch (err) {
+        console.error("[Server] Error closing database:", err);
+      }
+      process.exit(0);
+    });
+    
+    setTimeout(() => {
+      console.error("[Server] Forced shutdown after timeout.");
+      process.exit(1);
+    }, 10000);
+  }
+
+  process.on("SIGINT", gracefulShutdown);
+  process.on("SIGTERM", gracefulShutdown);
 }
 
-process.on("SIGINT", gracefulShutdown);
-process.on("SIGTERM", gracefulShutdown);
+module.exports = app;
