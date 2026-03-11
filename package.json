@@ -1,0 +1,15 @@
+{
+  "name": "resolveit-html",
+  "version": "1.0.0",
+  "description": "ResolveIt Complaint Management – standalone HTML version",
+  "main": "server.js",
+  "scripts": {
+    "dev": "node --experimental-sqlite server.js",
+    "start": "node --experimental-sqlite server.js"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "express": "^4.18.2",
+    "jsonwebtoken": "^9.0.2"
+  }
+}
